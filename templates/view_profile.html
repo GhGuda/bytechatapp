@@ -58,9 +58,10 @@
     </div>
 
     <!-- Send Message Button -->
-    <a href="{% url 'chat_view' username=user.username contact=user_to_view.username %}" class="send-message-btn" title="Send Message">
+    {% comment %} <a href="{% url 'chat_view' username=user.username contact=user_to_view.username
+     %}" class="send-message-btn" title="Send Message">
         <i class="fa fa-paper-plane"></i>
-    </a>
+    </a> {% endcomment %}
 </section>
 
 </body>

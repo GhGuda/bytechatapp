@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
     profile_img = models.ImageField(upload_to="profile_images", default="blank.webp")
     mobile_number = models.CharField(max_length=15, blank=True, null=True)
     bio = models.TextField()
+    friends = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='friend_of')
     last_seen = models.DateTimeField(default=timezone.now)
     is_online = models.BooleanField(default=False)
     
@@ -28,6 +29,12 @@ class CustomUser(AbstractUser):
             else:
                 return self.last_seen.strftime("%b %d at %I:%M %p")
         return "Offline"
+    
+    
+    def add_friend(self, user):
+        """Add a friend if not already added."""
+        if user != self and not self.friends.filter(id=user.id).exists():
+            self.friends.add(user)
 
 class Message(models.Model):
     sender = models.ForeignKey(CustomUser, related_name="sent_messages", on_delete=models.CASCADE)

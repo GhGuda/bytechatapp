@@ -12,20 +12,19 @@
 
 <section class="chat-page">
   <header class="chat-header">
-    <i class="fa fa-arrow-left"></i>
     <h2>Chat</h2>
   </header>
 
   <div class="search-bar">
     <i class="fa fa-search"></i>
-    <input type="text" placeholder="Search Matches" />
+    <input type="text" placeholder="Search Matches or Users" />
   </div>
 
-  <div class="matches">
+  {% comment %} <div class="matches">
     <div class="match"><img src="https://i.pravatar.cc/100?img=1" alt=""></div>
-  </div>
+  </div> {% endcomment %}
 
-  <div class="chat-list">
+  <div class="chat-list" id="chat-list">
         {% if contacts %}
             {% for contact in contacts %}
             <a href="{% url 'chat_view' username=username contact=contact.user %}" class="chat-item">
@@ -53,7 +52,7 @@
       <i class="fa fa-comment-dots"></i>
       <span>Chat</span>
     </a>
-    <a href="#" class="nav-item">
+    <a href="{% url "newFriend" %}" class="nav-item">
       <i class="fa fa-user-friends"></i>
       <span>Friends</span>
     </a>
@@ -61,9 +60,99 @@
       <i class="fa fa-user"></i>
       <span>Profile</span>
     </a>
+    <a href="{% url "logout" %}" class="nav-item">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>LogOut</span>
+    </a>
   </nav>
 
 </section>
+
+<script>
+  const currentUser = "{{ username }}"; // from Django context
+
+  function updateChatList() {
+    fetch("{% url 'frontpage' %}", { 
+        headers: { "X-Requested-With": "XMLHttpRequest" } 
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.contacts) return;
+
+        let html = "";
+
+        data.contacts.forEach(contact => {
+            html += `
+            <a href="/chat/${currentUser}/${contact.user}/" class="chat-item">
+                <div class="chat-left">
+                    <img src="${contact.profile_img}" alt="${contact.user}">
+                    <div class="chat-info">
+                        <h4>${contact.user.charAt(0).toUpperCase() + contact.user.slice(1)}</h4>
+                        <p>${contact.last_message ? contact.last_message : "No messages yet"}</p>
+                    </div>
+                </div>
+                <div class="chat-right">
+                    <small>${contact.time || ""}</small>
+                </div>
+            </a>`;
+        });
+
+        document.getElementById('chat-list').innerHTML = html || 
+            "<p style='text-align:center; margin-top:20px;'>No chats yet</p>";
+    })
+    .catch(err => console.error("Error updating chat list:", err));
+  }
+
+  // Auto-refresh every 5 seconds
+  setInterval(updateChatList, 5000);
+
+  // Initial load
+  updateChatList();
+
+
+  const searchInput = document.querySelector('.search-bar input');
+const chatList = document.getElementById('chat-list');
+
+searchInput.addEventListener('input', function() {
+    const query = this.value.trim();
+
+    if (query === '') {
+        // If search is empty, reload full chat list
+        updateChatList();
+        return;
+    }
+
+    fetch(`/search-users/?q=${encodeURIComponent(query)}`, {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const results = data.results || [];
+        let html = '';
+
+        if (results.length === 0) {
+            html = "<p style='text-align:center; margin-top:20px;'>No users found</p>";
+        } else {
+            results.forEach(user => {
+                html += `
+                <a href="/chat/{{ username }}/${user.username}/" class="chat-item">
+                    <div class="chat-left">
+                        <img src="${user.profile_img}" alt="${user.username}">
+                        <div class="chat-info">
+                            <h4>${user.username.charAt(0).toUpperCase() + user.username.slice(1)}</h4>
+                            <p>${user.email} | ${user.phone_number || ''}</p>
+                        </div>
+                    </div>
+                </a>`;
+            });
+        }
+
+        chatList.innerHTML = html;
+    })
+    .catch(err => console.error("Search error:", err));
+});
+</script>
+
 
 </body>
 </html>

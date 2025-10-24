@@ -44,6 +44,14 @@
         </div>
 
         <div class="form-group">
+            <label for="phone_number">Phone Number</label>
+            <input type="number" id="phone_number" name="phone_number" value="{{ user.mobile_number }}">
+            {% if errors.phone_number %}
+                <small class="error">{{ errors.phone_number }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
             <label for="bio">Bio</label>
             <textarea id="bio" name="bio" placeholder="Tell something about yourself...">{{ user.bio }}</textarea>
         </div>

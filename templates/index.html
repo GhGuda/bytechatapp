@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opana-Login</title>
+    <title>Byte ChatApp - Login</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 </head>
@@ -15,26 +15,29 @@
         <div class="container">
             <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <h3>Opana LogIn</h3>
+                <h3>Byte ChatApp Login</h3>
+
                 <div class="cont">
                     <label for="username">Username</label>
-                    <input type="text" name="username" id="" placeholder="Enter username">
+                    <input type="text" name="username" placeholder="Enter your username" required>
                 </div>
+
                 <div class="cont">
                     <label for="password">Password</label>
-                    <input type="password" name="password" id="" placeholder="Enter password">
+                    <input type="password" name="password" placeholder="Enter your password" required>
                 </div>
-                
-                {% for msg in messages %}
-                    <p>{{msg}}</p>
-                {% endfor %}
 
+                {% if messages %}
+                    {% for msg in messages %}
+                        <p>{{ msg }}</p>
+                    {% endfor %}
+                {% endif %}
 
-                <button type="submit">LogIn</button>
+                <button type="submit">Login</button>
             </form>
 
             <div class="ask">
-                {% comment %} <p>Already have an account? <a href="{% url 'register' %}">Register</a>.</p> {% endcomment %}
+                <p>Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
             </div>
         </div>
     </section>
