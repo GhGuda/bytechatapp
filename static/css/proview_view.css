@@ -1,0 +1,178 @@
+
+:root {
+  --primary: #6c63ff;
+  --light-gray: #f9f9f9;
+  --text-color: #222;
+  --muted: #999;
+  --footer-bg: #ffffff;
+  --active-color: #6c63ff;
+  --shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.chat-page {
+  max-width: 420px;           /* mobile-width feel */
+  margin: 20px auto;
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Header */
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 16px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.chat-header i {
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.chat-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+
+/* =============================== Profile View Page Styles================================= */
+
+/* Container */
+.profile-container.view-only {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+}
+
+/* Profile Image */
+.profile-container.view-only .profile-image-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.profile-container.view-only .profile-image-section img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #6c63ff;
+}
+
+/* Online status dot */
+.profile-container.view-only .profile-image-section .status-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 5px;
+    right: calc(50% - 10px);
+    border: 2px solid white;
+}
+
+.status-online {
+    background-color: #4caf50;
+}
+
+.status-offline {
+    background-color: #ccc;
+}
+
+/* Info Fields */
+.profile-container.view-only .form-group label {
+    font-weight: 500;
+    color: #666;
+}
+
+.profile-container.view-only .form-group p {
+    background: #f6f6f6;
+    padding: 10px;
+    border-radius: 12px;
+    color: #333;
+    margin-top: 5px;
+}
+
+/* Header */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.profile-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.profile-header .back i {
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+}
+
+/* Send Message Button */
+.send-message-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #6c63ff;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: background 0.3s;
+    text-decoration: none;
+}
+
+.send-message-btn:hover {
+    background: #574fd6;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .profile-container.view-only .profile-image-section img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .send-message-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+}

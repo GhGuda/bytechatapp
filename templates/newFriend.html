@@ -1,0 +1,130 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byte Chat</title>
+    <link rel="stylesheet" href="{% static 'css/frontpage.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+</head>
+<body>
+    <section>
+        <div class="container">
+            <nav>
+                <div class="coversec">
+                    <div class="logo">
+                        <a href="/">Byte Chat</a>
+                    </div>
+                </div>
+                <div class="user">
+                    <a href="#">
+                        <i class="fa fas fa-user-friends"></i>
+                        <!-- <span class="sp">10</span> -->
+                    </a>
+                    {% comment %} <a href="#">
+                        <i class="fa fa-bell"></i>
+                        <!-- <span class="spp">100</span> -->
+                    </a> {% endcomment %}
+                    <img src="{{user.profile_img.url}}" alt="" onclick="dropMe()">
+                </div>
+            </nav>
+
+
+            <div class="settingsmenu">
+                <a href="#" class="list">
+                    <p>Profile</p>
+                    <small>{{user.username}}</small>
+                    
+                </a>
+                <a href="#" class="list">
+                    <p>Settings & Privacy</p>
+                    <i class="fa fa-gear"></i>
+                </a>
+                <a href="#" class="list">
+                    <p>Report Problem</p>
+                    <i class="fa fa-message"></i>
+                </a>
+                <a href="#" class="list">
+                    <p>Help</p>
+                    <i class="fa fas fa-hands-helping"></i>
+                </a>
+                <a href="#" class="list">
+                    <p>FAQ</p>
+                    <i class="fa fas fa-question-circle"></i>
+                </a>
+
+                {% comment %} <a href="{% url 'logout' %}" class="btn">Log Out</a> {% endcomment %}
+            </div>
+            <main>
+            <div class="header">New Friends</div>
+                <div id="chat-list">
+                    {% if newFriend %}
+                        {% for contact in newFriend %}
+                            <div class="card">
+                            <a href="{% url 'chat_view' username=user.username contact=contact.username %}" class="user_list">
+                                <img src="{{ contact.profile_img.url }}" alt="">
+                                <div class="chat">
+                                <small>{{ contact.username }}</small>
+                                <p>{{ contact.last_message|truncatechars:35 }}</p>
+                                </div>
+                                <span class="time">{{ contact.time }}</span>
+                            </a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                </div>
+            <p style="text-align:center; margin-top:20px;">No friends yet</p>
+            {% endif %}
+
+
+            </main>
+
+        </div>
+    </section>
+
+
+    <script>
+        var drop = document.querySelector(".settingsmenu");
+
+        function dropMe(){
+            drop.classList.toggle("settings_height")
+        }
+
+        function updateChatList() {
+            fetch(window.location.href, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+                .then(res => res.json())
+                .then(data => {
+                if (!data.contacts) return;
+                let html = "";
+
+                data.contacts.forEach(contact => {
+                    html += `
+                    <div class="card">
+                    <a href="/chat/{{ username }}/${contact.user}/" class="user_list">
+                        <img src="${contact.profile_img}" alt="${contact.user}">
+                        <div class="chat">
+                        <small>${contact.user}</small>
+                        <p>${contact.last_message || "No messages yet"}</p>
+                        </div>
+                        <span class="time">${contact.time}</span>
+                    </a>
+                    </div>`;
+                });
+
+                // ✅ Only replace inside chat list, not entire main
+                document.getElementById('chat-list').innerHTML = html || 
+                    "<p style='text-align:center; margin-top:20px;'>No chats yet</p>";
+                })
+                .catch(err => console.error("Error updating chat list:", err));
+        }
+
+
+        // Auto-refresh every 5 seconds
+        setInterval(updateChatList, 1000);
+    </script>
+    
+</body>
+</html>

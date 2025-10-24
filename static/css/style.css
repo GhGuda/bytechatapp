@@ -1,0 +1,141 @@
+:root{
+    --text-color: rgba(0, 0, 0, 0.949);
+    --accent-color: rgb(255, 255, 255);
+    --motion-color: rgb(12, 31, 126);
+    --motion-hover-color: rgba(21, 50, 197, 0.712);
+    --hover-color: rgba(117, 117, 117, 0.571);
+    --hov-color: rgba(212, 212, 212, 0.038);
+    --warning-color: rgba(255, 0, 0, 0.993);
+}
+
+
+
+*{
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+    border: none; 
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+}
+
+
+body{
+    background: var(--hover-color);
+    
+}
+
+html{
+    font-size: 100%;
+}
+
+section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 95vh;
+}
+
+.container{
+    background: var(--accent-color);
+    height: 80%;
+    padding: 1rem;
+    width: 25rem;
+    border-radius: 1rem;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 2rem 0;
+    width: 100%;    
+}
+
+
+form h3{
+    text-align: center;
+    font-size: 2rem;
+    color: var(--motion-color);
+    font-weight: 900;
+}
+
+.cont{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    gap: .3rem;
+    color: var(--text-color);
+    font-weight: 550;
+}
+
+.cont input{
+    padding: .23rem .4rem;
+    border: .1rem solid var(--hover-color);
+    border-radius: 2rem;
+    font-size: 100%;
+}
+
+
+.cont input::placeholder{
+    color: var(--hover-color);
+}
+
+p{
+    color: var(--warning-color);
+    margin-top: -.4rem;
+}
+
+
+button{
+    padding: .5rem;
+    border-radius: 2rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .3s;
+}
+
+button:hover{
+    background: var(--motion-hover-color);
+    color: var(--accent-color);
+}
+
+.ask{
+    text-align: end;
+}
+
+.ask p{
+    color: var(--text-color);
+
+}
+
+.ask a{
+    color: var(--motion-hover-color);
+    transition: .3s;
+}
+
+.ask a:hover{
+    color: var(--hover-color);
+}
+
+
+/* @media (max-width: 1800px){
+    .container{
+        background: var(--accent-color);
+        height: 50vh;
+        padding: 1rem;
+        width: 25rem;
+        border-radius: 1rem;
+    }
+    
+    form{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 2rem 0;
+        margin-top: 5rem;
+        width: 100%;
+        height: 50rem;
+    }
+} */

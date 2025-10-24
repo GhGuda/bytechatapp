@@ -1,0 +1,231 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Byte Chat</title>
+    <link rel="stylesheet" href="{% static 'css/frontpage.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+</head>
+<body>
+    <section>
+        <div class="container">
+            <nav>
+                <div class="coversec">
+                    <div class="logo">
+                        <a href="/">Byte Chat</a>
+                    </div>
+                </div>
+                <div class="user">
+                    <a href="{% url "newFriend" %}">
+                        <i class="fa fas fa-user-friends"></i>
+                        <!-- <span class="sp">10</span> -->
+                    </a>
+                    {% comment %} <a href="#">
+                        <i class="fa fa-bell"></i>
+                        <!-- <span class="spp">100</span> -->
+                    </a> {% endcomment %}
+                    <img src="{{user.profile_img.url}}" alt="" onclick="dropMe()">
+                </div>
+            </nav>
+
+
+            <div class="settingsmenu">
+                <a href="#" class="list">
+                    <p>Profile</p>
+                    <small>{{user.username}}</small>
+                    
+                </a>
+                <a href="#" class="list">
+                    <p>Settings & Privacy</p>
+                    <i class="fa fa-gear"></i>
+                </a>
+                <a href="#" class="list">
+                    <p>Report Problem</p>
+                    <i class="fa fa-message"></i>
+                </a>
+                <a href="#" class="list">
+                    <p>Help</p>
+                    <i class="fa fas fa-hands-helping"></i>
+                </a>
+                <a href="#" class="list">
+                    <p>FAQ</p>
+                    <i class="fa fas fa-question-circle"></i>
+                </a>
+
+                {% comment %} <a href="{% url 'logout' %}" class="btn">Log Out</a> {% endcomment %}
+            </div>
+            <main>
+            <div class="header">Chats</div>
+                <div id="chat-list">
+                    {% if contacts %}
+                        {% for contact in contacts %}
+                            <div class="card">
+                            <a href="{% url 'chat_view' username=username contact=contact.user %}" class="user_list">
+                                <img src="{{ contact.profile_img }}" alt="">
+                                <div class="chat">
+                                <small>{{ contact.user.username }}</small>
+                                <p>{{ contact.last_message|truncatechars:35 }}</p>
+                                </div>
+                                <span class="time">{{ contact.time }}</span>
+                            </a>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                </div>
+            <p style="text-align:center; margin-top:20px;">No chats yet</p>
+            {% endif %}
+
+
+            </main>
+
+        </div>
+    </section>
+
+
+    <script>
+
+        function updateChatList() {
+            fetch(window.location.href, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+                .then(res => res.json())
+                .then(data => {
+                if (!data.contacts) return;
+                let html = "";
+
+                data.contacts.forEach(contact => {
+                    html += `
+                    <div class="card">
+                    <a href="/chat/{{ username }}/${contact.user}/" class="user_list">
+                        <img src="${contact.profile_img}" alt="${contact.user}">
+                        <div class="chat">
+                        <small>${contact.user}</small>
+                        <p>${contact.last_message || "No messages yet"}</p>
+                        </div>
+                        <span class="time">${contact.time}</span>
+                    </a>
+                    </div>`;
+                });
+
+                // ✅ Only replace inside chat list, not entire main
+                document.getElementById('chat-list').innerHTML = html || 
+                    "<p style='text-align:center; margin-top:20px;'>No chats yet</p>";
+                })
+                .catch(err => console.error("Error updating chat list:", err));
+        }
+
+
+        // Auto-refresh every 5 seconds
+        setInterval(updateChatList, 1000);
+    </script>
+    
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+<!-- chat details==================== -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ contact.username|capfirst }}</title>
+  <link rel="stylesheet" href="{% static 'css/frontpage.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+</head>
+
+<body>
+
+<section>
+  <div class="container">
+
+    <nav>
+      <div class="coversec">
+        <a href="" class="bac"><i class="fa fa-arrow-left"></i></a>
+        <div>
+            <div class="logo"><a href="#">{{ contact.username|capfirst }}</a></div>
+            <p class="status">
+                {% if contact.user_obj.is_online %}
+                <span class="dot online"></span> Active now
+                {% else %}
+                <span class="dot"></span> Last seen {{ contact.user_obj.last_seen_display }}
+                {% endif %}
+            </p>
+        </div>
+
+      </div>
+      <div class="user">
+        <img src="{{ contact.profile_img.url }}" alt="{{ contact.username }}">
+      </div>
+    </nav>
+
+    <div class="mesgsec" id="chatBox"
+         style="background: linear-gradient(rgba(136,133,133,0.377), rgba(128,128,128,0.301)),
+                url('{% static "images/photo_2023-07-14_01-28-37.jpg" %}');
+                background-position:center;background-size:cover;">
+        {% for msg in messages %}
+            {% for msg in messages %}
+                {% if msg.sender == request.user %}
+                    <div class="mymsg" data-id="{{ msg.id }}">
+                    <div class="bubble">
+                        <p class="msg-text">{{ msg.content }} {% if msg.edited %}<small>(edited)</small>{% endif %}</p>
+                        <small>{{ msg.timestamp|date:"H:i" }}</small>
+
+                        <!-- Action buttons -->
+                        <div class="msg-actions">
+                        <button class="edit-btn"><i class="fa fa-edit"></i></button>
+                        <button class="delete-btn"><i class="fa fa-trash"></i></button>
+                        </div>
+                    </div>
+                    </div>
+                {% else %}
+                    <div class="friendmsg">
+                    <div class="bubble">
+                        <p>{{ msg.content }}</p>
+                        <small>{{ msg.timestamp|date:"H:i" }}</small>
+                    </div>
+                    </div>
+                {% endif %}
+        {% endfor %}
+
+        {% endfor %}
+    </div>
+
+    <form id="chatForm" class="msgform">
+      {% csrf_token %}
+      <textarea id="messageInput" name="message" placeholder="Type a message..." required></textarea>
+      <button type="submit"><i class="fa fa-paper-plane"></i></button>
+    </form>
+
+  </div>
+</section>
+
+
+</body>
+</html>

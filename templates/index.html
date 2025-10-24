@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opana-Login</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+</head>
+<body>
+    <section>
+        <div class="container">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h3>Opana LogIn</h3>
+                <div class="cont">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="" placeholder="Enter username">
+                </div>
+                <div class="cont">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="" placeholder="Enter password">
+                </div>
+                
+                {% for msg in messages %}
+                    <p>{{msg}}</p>
+                {% endfor %}
+
+
+                <button type="submit">LogIn</button>
+            </form>
+
+            <div class="ask">
+                {% comment %} <p>Already have an account? <a href="{% url 'register' %}">Register</a>.</p> {% endcomment %}
+            </div>
+        </div>
+    </section>
+</body>
+</html>

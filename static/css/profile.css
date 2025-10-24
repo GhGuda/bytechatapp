@@ -1,0 +1,148 @@
+:root {
+  --primary: #6c63ff;
+  --light-gray: #f9f9f9;
+  --text-color: #222;
+  --muted: #999;
+  --footer-bg: #ffffff;
+  --active-color: #6c63ff;
+  --shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.chat-page {
+  max-width: 420px;           /* mobile-width feel */
+  margin: 20px auto;
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Header */
+.profile-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--white);
+  border-bottom: 1px solid #eee;
+  gap: 1rem;
+}
+
+.profile-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.profile-header .back i {
+  font-size: 1.2rem;
+  color: var(--gray);
+  cursor: pointer;
+}
+
+
+.profile-container {
+    width: 90%;
+    max-width: 400px;
+    margin: 0 auto 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Profile Image */
+.profile-image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.profile-image-section img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary);
+}
+
+.profile-image-section .upload-btn {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #fff;
+    background: var(--primary);
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.profile-image-section .upload-btn:hover {
+    background: #574fd6;
+}
+
+.profile-image-section input[type="file"] {
+    display: none;
+}
+
+/* Form Inputs */
+.profile-container .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-container label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 5px;
+}
+
+.profile-container input,
+.profile-container textarea {
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+    outline: none;
+    resize: none;
+}
+
+.profile-container .update-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.profile-container .update-btn:hover {
+    background: #574fd6;
+}
+
+/* Error messages */
+.error {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: 3px;
+}

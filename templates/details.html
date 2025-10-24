@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat – {{ contact.username|capfirst }}</title>
+
+  <link rel="stylesheet" href="{% static 'css/conversation.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+<audio id="sendSound" src="{% static 'sounds/send.mp3' %}" preload="auto"></audio>
+<audio id="receiveSound" src="{% static 'sounds/receive.mp3' %}" preload="auto"></audio>
+
+<section class="chat-window">
+  <!-- Header -->
+  <header class="chat-header">
+    <a href="{% url 'frontpage' %}" class="back"><i class="fa fa-arrow-left"></i></a>
+
+    <a href={% url "view_profile" contact.username %} class="user-info">
+      <img src="{{ contact.profile_img.url }}" alt="{{ contact.username }}">
+      <div>
+        <h4>{{ contact.username|capfirst }}</h4>
+        <small class="status">
+          {% if contact.is_online %}
+            <span class="dot online"></span> Active now
+          {% else %}
+            <span class="dot"></span> Last seen {{ contact.last_login|date:"M d, h:i a" }}
+          {% endif %}
+        </small>
+      </div>
+    </a>
+  </header>
+
+  <!-- Chat Body -->
+  <div class="chat-body" id="chatBox"
+       style="background: linear-gradient(rgba(136,133,133,0.377), rgba(128,128,128,0.301)),
+              url('{% static "images/photo_2023-07-14_01-28-37.jpg" %}');
+              background-position:center;background-size:cover;">
+    {% if messages %}
+      {% for msg in messages %}
+        {% if msg.sender == request.user %}
+          <div class="msg me" data-id="{{ msg.id }}">
+            <div class="bubble">
+              <p class="msg-text">
+                {{ msg.content }}
+                {% if msg.edited %}<small>(edited)</small>{% endif %}
+              </p>
+              <small>{{ msg.timestamp|date:"h:i a" }}</small>
+              <div class="msg-actions">
+                <button class="edit-btn"><i class="fa fa-edit"></i></button>
+                <button class="delete-btn"><i class="fa fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="msg friend" data-id="{{ msg.id }}">
+            <div class="bubble">
+              <p>{{ msg.content }}</p>
+              <small>{{ msg.timestamp|date:"h:i a" }}</small>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <p style="text-align:center; color:white; margin-top:20px;">
+        No messages yet. Start a conversation 👋
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- Input -->
+  <form class="chat-input" id="chatForm">
+    {% csrf_token %}
+    <input type="text" id="messageInput" name="message" placeholder="Type your message..." autocomplete="off" />
+    <button type="submit"><i class="fa fa-paper-plane"></i></button>
+  </form>
+</section>
+
+<script>
+  const chatBox = document.getElementById('chatBox');
+  const messageInput = document.getElementById('messageInput');
+  const chatForm = document.getElementById('chatForm');
+  const sendSound = document.getElementById('sendSound');
+  const receiveSound = document.getElementById('receiveSound');
+  let lastMessageCount = {{ messages|length }};
+  let autoScroll = true;
+
+  function scrollBottom(force=false){
+    if(force || autoScroll) chatBox.scrollTop = chatBox.scrollHeight;
+  }
+  chatBox.addEventListener('scroll', ()=>{
+    autoScroll = chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 50;
+  });
+  scrollBottom(true);
+
+  // --- Send message ---
+  chatForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const message = messageInput.value.trim();
+    if(!message) return;
+
+    const formData = new FormData();
+    formData.append('message', message);
+    formData.append('receiver', '{{ contact.username }}');
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    fetch("{% url 'send_message' %}", {
+      method: 'POST', body: formData
+    })
+    .then(res=>res.json())
+    .then(data=>{
+      if(!data.error){
+        const div = document.createElement('div');
+        div.classList.add('msg','me');
+        div.dataset.id = data.id;
+        div.innerHTML = `
+          <div class="bubble">
+            <p class="msg-text">${data.content}</p>
+            <small>${data.timestamp}</small>
+            <div class="msg-actions">
+              <button class="edit-btn"><i class="fa fa-edit"></i></button>
+              <button class="delete-btn"><i class="fa fa-trash"></i></button>
+            </div>
+          </div>`;
+        chatBox.appendChild(div);
+        messageInput.value = '';
+        scrollBottom(true);
+        try { sendSound.play(); } catch(e){}
+        lastMessageCount++;
+      }
+    });
+  });
+
+  // --- Fetch new messages ---
+  function fetchMessages(){
+    fetch("{% url 'fetch_messages' contact.username %}")
+    .then(res=>res.json())
+    .then(data=>{
+      if(!data.messages) return;
+      if(data.messages.length > lastMessageCount){
+        const newMessages = data.messages.slice(lastMessageCount);
+        newMessages.forEach(msg=>{
+          const side = msg.sender === "{{ request.user.username }}" ? 'me' : 'friend';
+          const div = document.createElement('div');
+          div.classList.add('msg', side);
+          div.innerHTML = `
+            <div class="bubble">
+              <p>${msg.content}</p>
+              <small>${msg.timestamp}</small>
+            </div>`;
+          chatBox.appendChild(div);
+          if(side === 'friend') try { receiveSound.play(); } catch(e){}
+        });
+        lastMessageCount = data.messages.length;
+        scrollBottom();
+      }
+    });
+  }
+  setInterval(fetchMessages,2000);
+
+  // --- Enter sends message ---
+  messageInput.addEventListener('keydown', e=>{
+    if(e.key==='Enter' && !e.shiftKey){
+      e.preventDefault();
+      chatForm.dispatchEvent(new Event('submit'));
+    }
+  });
+
+  // --- Edit ---
+  document.addEventListener('click', e=>{
+    if(e.target.closest('.edit-btn')){
+      const msgDiv = e.target.closest('.msg.me');
+      const msgId = msgDiv.dataset.id;
+      const p = msgDiv.querySelector('.msg-text');
+      const newText = prompt('Edit your message:', p.textContent.trim());
+      if(!newText || !newText.trim()) return;
+
+      const fd = new FormData();
+      fd.append('content', newText.trim());
+      fd.append('csrfmiddlewaretoken','{{ csrf_token }}');
+
+      fetch(`/message/edit/${msgId}/`,{method:'POST', body:fd})
+      .then(res=>res.json())
+      .then(data=>{
+        if(!data.error) p.innerHTML = `${data.content} <small>(edited)</small>`;
+      });
+    }
+  });
+
+  // --- Delete ---
+  document.addEventListener('click', e=>{
+    if(e.target.closest('.delete-btn')){
+      const msgDiv = e.target.closest('.msg.me');
+      const msgId = msgDiv.dataset.id;
+      if(confirm('Delete this message?')){
+        const fd = new FormData();
+        fd.append('csrfmiddlewaretoken','{{ csrf_token }}');
+        fetch(`/message/delete/${msgId}/`,{method:'POST', body:fd})
+        .then(res=>res.json())
+        .then(data=>{ if(data.success) msgDiv.remove(); });
+      }
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile – {{ user.username|capfirst }}</title>
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+<section class="chat-page">
+    <header class="profile-header">
+        <a href="{% url 'frontpage' %}" class="back"><i class="fa fa-arrow-left"></i></a>
+        <h3>My Profile</h3>
+    </header>
+
+    <form method="POST" enctype="multipart/form-data" class="profile-container">
+        {% csrf_token %}
+
+        <!-- Profile Image -->
+        <div class="profile-image-section">
+            <img id="profilePreview" src="{{ user.profile_img.url }}" alt="{{ user.username }}">
+            <label for="profileImageInput" class="upload-btn"><i class="fa fa-camera"></i> Change</label>
+            <input type="file" id="profileImageInput" name="profile_img" accept="image/*">
+        </div>
+
+        <!-- Inputs -->
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" value="{{ user.username }}" required>
+            {% if errors.username %}
+                <small class="error">{{ errors.username }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+            {% if errors.email %}
+                <small class="error">{{ errors.email }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio" name="bio" placeholder="Tell something about yourself...">{{ user.bio }}</textarea>
+        </div>
+
+        <button type="submit" class="update-btn">Update Profile</button>
+
+        {% if messages %}
+            {% for message in messages %}
+                <small style="color:green;">{{ message }}</small>
+            {% endfor %}
+        {% endif %}
+    </form>
+</section>
+
+<script>
+const profileImageInput = document.getElementById('profileImageInput');
+const profilePreview = document.getElementById('profilePreview');
+
+// Live image preview
+profileImageInput.addEventListener('change', () => {
+    const file = profileImageInput.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = e => profilePreview.src = e.target.result;
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+
+</body>
+</html>

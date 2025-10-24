@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user_to_view.username|capfirst }}'s Profile</title>
+    <link rel="stylesheet" href="{% static 'css/proview_view.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+<section class="chat-page">
+    <!-- Header -->
+    <header class="profile-header">
+        <a href="{% url 'frontpage' %}" class="back"><i class="fa fa-arrow-left"></i></a>
+        <h3>{{ user_to_view.username|capfirst }}'s Profile</h3>
+    </header>
+
+    <!-- Profile Info -->
+    <div class="profile-container view-only">
+        <!-- Profile Image -->
+        <div class="profile-image-section">
+            <img src="{{ user_to_view.profile_img.url }}" alt="{{ user_to_view.username }}">
+        </div>
+
+        <!-- Info -->
+        <div class="form-group">
+            <label>Username</label>
+            <p>{{ user_to_view.username }}</p>
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <p>{{ user_to_view.email }}</p>
+        </div>
+
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <p>{{ user_to_view.mobile_number|default:"Not provided" }}</p>
+        </div>
+
+        <div class="form-group">
+            <label>Bio</label>
+            <p>{{ user_to_view.bio|default:"No bio available." }}</p>
+        </div>
+
+        <div class="form-group">
+            <label>Last Seen</label>
+            <p>
+                {% if user_to_view.is_online %}
+                    <span style="color:green;">Online now</span>
+                {% else %}
+                    {{ user_to_view.last_seen|date:"M d, Y H:i" }}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Send Message Button -->
+    <a href="{% url 'chat_view' username=user.username contact=user_to_view.username %}" class="send-message-btn" title="Send Message">
+        <i class="fa fa-paper-plane"></i>
+    </a>
+</section>
+
+</body>
+</html>

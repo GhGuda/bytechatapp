@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat List</title>
+  <link rel="stylesheet" href="{% static '/css/chatlist.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<section class="chat-page">
+  <header class="chat-header">
+    <i class="fa fa-arrow-left"></i>
+    <h2>Chat</h2>
+  </header>
+
+  <div class="search-bar">
+    <i class="fa fa-search"></i>
+    <input type="text" placeholder="Search Matches" />
+  </div>
+
+  <div class="matches">
+    <div class="match"><img src="https://i.pravatar.cc/100?img=1" alt=""></div>
+  </div>
+
+  <div class="chat-list">
+        {% if contacts %}
+            {% for contact in contacts %}
+            <a href="{% url 'chat_view' username=username contact=contact.user %}" class="chat-item">
+                <div class="chat-left">
+                    <img src="{{ contact.profile_img }}" alt="{{ contact.user.username }}">
+                    <div class="chat-info">
+                        <h4>{{ contact.user|capfirst }}</h4>
+                        <p>{{ contact.last_message|truncatechars:30 }}</p>
+                    </div>
+                </div>
+                <div class="chat-right">
+                    <small>{{ contact.time }}</small>
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+            <p class="no-chat">No chats yet</p>
+        {% endif %}
+    </div>
+
+
+  <!-- Footer Navigation -->
+  <nav class="footer-nav">
+    <a href="#" class="nav-item active">
+      <i class="fa fa-comment-dots"></i>
+      <span>Chat</span>
+    </a>
+    <a href="#" class="nav-item">
+      <i class="fa fa-user-friends"></i>
+      <span>Friends</span>
+    </a>
+    <a href="{% url "profile" %}" class="nav-item">
+      <i class="fa fa-user"></i>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+</section>
+
+</body>
+</html>
